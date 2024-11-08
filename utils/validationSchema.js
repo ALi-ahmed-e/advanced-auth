@@ -17,11 +17,20 @@ const loginBodyValidation = (body) => {
     return schema.validate(body)
 }
 
+const verfiyBodyValidation = (body) => {
+    const schema = joi.object({
+        code: joi.string().required(),
+    })
+    return schema.validate(body)
+}
+
 
 
 
 module.exports=  {
     signUpBodyValidation,
     loginBodyValidation,
+    verfiyBodyValidation,
+
     
 }
