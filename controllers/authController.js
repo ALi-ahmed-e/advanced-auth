@@ -222,6 +222,24 @@ const resetPassword = async (req, res, next) => {
 };
 
 
+
+const checkLoggedIn = async (req, res) => {
+    const user = await User.findById(req.user._id)
+
+
+    if (user) {
+
+        const { password, ...clientUser } = user._doc
+
+
+
+        return res.status(200).json(clientUser)
+    }
+
+    return res.status(401).json('not logged in')
+
+}
+
 module.exports = {
     signup,
     login,
@@ -229,6 +247,8 @@ module.exports = {
     logout,
     resetPasswordReq,
     resetPassword,
+    checkLoggedIn,
+
 
 
 }

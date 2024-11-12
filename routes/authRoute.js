@@ -1,6 +1,11 @@
-const { signup, login, verifyEmail, logout,resetPasswordReq,resetPassword } = require("../controllers/authController")
-
+const { signup, login, verifyEmail, logout,resetPasswordReq,resetPassword,checkLoggedIn } = require("../controllers/authController")
+const authMiddleware  = require("../middleware/authMiddleware")
 const Router = require("express").Router()
+
+
+
+Router.get('/check-auth', authMiddleware,checkLoggedIn)
+
 
 
 Router.post('/signup', signup)
