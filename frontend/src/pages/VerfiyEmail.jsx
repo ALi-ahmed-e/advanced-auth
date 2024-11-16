@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react"
+import { useVerfiyUserEmailMutation } from "../store/auth"
+import { useNavigate } from "react-router-dom"
+import { LuLoader2 } from "react-icons/lu"
 
 const VerfiyEmail = () => {
 
+    const [VerfiyEmail, { data, error, isLoading }] = useVerfiyUserEmailMutation()
 
-
+    const navigate = useNavigate()
     const fieldsRef = useRef()
     const [state, setState] = useState({ code1: "", code2: "", code3: "", code4: "", code5: "", code6: "" })
-    const err = false
 
 
-    
     // Switch to input fields method
     const inputFocus = (e) => {
         const elements = fieldsRef.current.children
@@ -35,12 +37,19 @@ const VerfiyEmail = () => {
 
 
 
-    const handleSubmit = () => {
-        console.log(state)
+    const handleSubmit = async () => {
+        const code = `${state.code1}${state.code2}${state.code3}${state.code4}${state.code5}${state.code6}`
+        await VerfiyEmail({ code })
+
     }
 
 
+    useEffect(() => {
+        if (data?.success) {
 
+            navigate("/")
+        }
+    }, [data])
 
     return (
         <div>
@@ -77,10 +86,13 @@ const VerfiyEmail = () => {
                     />
                 </div>
 
-                {err && <p className=" font-normal text-red-500">
-                    wrong or expired code
-                </p>}
-                <button type="submit" onClick={handleSubmit} className=' w-full p-3 mt-5 text-white bg-gradient-to-r from-emerald-600 to-emerald-400 hover:opacity-85 rounded-xl font-semibold'>Submit</button>
+                {error && <p className=" font-normal text-red-500">
+                    {error?.data?.message}                </p>}
+
+
+                <button type="submit"  onClick={handleSubmit} disabled={isLoading} className=' mt-5 flex items-center justify-center w-full p-3 text-white bg-gradient-to-r from-emerald-600 to-emerald-400 hover:opacity-85 rounded-xl font-semibold'>
+                    {isLoading ? <LuLoader2 className=' animate-spin text-4xl' /> : 'Submit'}
+                </button>
 
             </div>
         </div>

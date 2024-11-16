@@ -1,16 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Input from '../components/Input';
 import { FaLock, FaUser } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
+import { useSignUpUserMutation } from '../store/auth';
+import { LuLoader2 } from 'react-icons/lu';
 
 const Signup = () => {
     const navigate = useNavigate()
+    const [signUpUser, { isLoading, data, error }] = useSignUpUserMutation()
+
 
     const SignupSchema = Yup.object().shape({
-        Name: Yup.string()
+        name: Yup.string()
             .min(2, 'Name is Too Short!')
             .max(50, 'Name is Too Long!')
             .required('Name is Required'),
@@ -26,15 +30,28 @@ const Signup = () => {
 
     const formik = useFormik({
         initialValues: {
-            Name: '',
+            name: '',
             email: '',
             password: '',
         },
         validationSchema: SignupSchema,
-        onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
-        },
+        onSubmit: values => handleSb(values),
     });
+
+    const handleSb = async (data) => {
+        try {
+            await signUpUser(data)
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    useEffect(() => {
+        if (data?.success) {
+            navigate('/verfiy-email')
+        }
+    }, [data])
 
 
 
@@ -48,13 +65,13 @@ const Signup = () => {
             <Input
                 icon={FaUser}
                 placeholder='Full Name'
-                id="Name"
-                name="Name"
+                id="name"
+                name="name"
                 type="text"
 
                 onChange={formik.handleChange}
-                value={formik.values.Name}
-                msg={formik.errors.Name}
+                value={formik.values.name}
+                msg={formik.errors.name}
             />
 
 
@@ -92,14 +109,17 @@ const Signup = () => {
             />
 
 
+            {error && <p className=" font-normal text-red-500">
+                {error?.data?.message}                </p>}
 
 
 
-            <button type="submit" className=' w-full p-3 mt-8 text-white bg-gradient-to-r from-emerald-600 to-emerald-400 hover:opacity-85 rounded-xl font-semibold'>Submit</button>
-
+            <button type="submit" disabled={isLoading} className=' flex items-center justify-center w-full p-3 text-white bg-gradient-to-r from-emerald-600 to-emerald-400 hover:opacity-85 rounded-xl font-semibold'>
+                {isLoading ? <LuLoader2 className=' animate-spin text-4xl' /> : 'Submit'}
+            </button>
 
             <div className='mt-5 bg-gray-800/80 rounded-b-lg w-full p-5 absolute bottom-0 flex items-center justify-center'>
-                Already have an account ? <h3  onClick={()=>navigate('/signin')} className=' self-start   hover:underline text-green-500 cursor-pointer ml-2'>  Sign in</h3>
+                Already have an account ? <h3 onClick={() => navigate('/signin')} className=' self-start   hover:underline text-green-500 cursor-pointer ml-2'>  Sign in</h3>
             </div>
 
         </form>

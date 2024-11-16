@@ -5,8 +5,46 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import VerfiyEmail from './pages/VerfiyEmail'
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { useCheckAuthQuery } from './store/auth'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setAuthData } from './store/AuthReducer'
 function App() {
+
+  const dispatch = useDispatch()
+  const { error, isSuccess, data,isLoading } = useCheckAuthQuery()
+  const user = useSelector(state => state.Auth.user)
+  
+
+
+  useEffect(() => {
+    dispatch(setAuthData(data))
+
+  }, [isSuccess])
+
+
+
+
+  const CheckAuth = ({ children }) => {
+
+
+    if (!user) {
+      return <Navigate to='/signin' />
+    } else {
+      return children
+    }
+
+
+  }
+  const CheckNotAuth = ({ children }) => {
+    if (user) {
+      return <Navigate to='/' />
+    } else {
+      return (children)
+    }
+  }
+
 
   return (
     <>
@@ -23,17 +61,17 @@ function App() {
             }}
           >
 
-            {/* <LoadingSpinner /> */}
+            {isLoading&&<LoadingSpinner />}
 
             <Routes>
 
-              <Route path='/' element={<Home />} />
+              <Route path='/' element={<CheckAuth><Home /></CheckAuth>} />
 
-              <Route path='/signup' element={<Signup />} />
+              <Route path='/signup' element={<CheckNotAuth><Signup /></CheckNotAuth>} />
 
-              <Route path='/signin' element={<Login />} />
+              <Route path='/signin' element={<CheckNotAuth><Login /></CheckNotAuth>} />
 
-              <Route path='/verfiy-email' element={<VerfiyEmail />} />
+              <Route path='/verfiy-email' element={<CheckNotAuth><VerfiyEmail /></CheckNotAuth>} />
 
               <Route path='/forgot-password' element={<ForgotPassword />} />
 

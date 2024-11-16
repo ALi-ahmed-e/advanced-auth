@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Input from '../components/Input';
 import { FaLock, FaUser } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
+import { useLoginUserMutation } from '../store/auth';
+import { LuLoader2 } from "react-icons/lu";
+import { setAuthData } from '../store/AuthReducer';
+import { useDispatch } from 'react-redux';
+
 
 const Login = () => {
     const navigate = useNavigate()
+    const [LoginUser, { isLoading, data, error }] = useLoginUserMutation()
+    const dispatch = useDispatch()
 
     const SigninSchema = Yup.object().shape({
         password: Yup.string()
@@ -27,9 +34,26 @@ const Login = () => {
         },
         validationSchema: SigninSchema,
         onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
+            // alert(JSON.stringify(values, null, 2));
+            handleSb(values)
         },
     });
+
+
+    const handleSb = async (d) => {
+        try {
+            await LoginUser(d)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    useEffect(() => {
+        if (data?.success) {
+            dispatch(setAuthData(data.user))
+            navigate('/')
+        }
+    })
 
 
 
@@ -72,15 +96,19 @@ const Login = () => {
 
 
 
-            <h3  onClick={()=>navigate('/forgot-password')}  className=' self-start  mb-5 hover:underline text-white cursor-pointer'>Forgot password ?</h3>
+            <h3 onClick={() => navigate('/forgot-password')} className=' self-start  mb-5 hover:underline text-white cursor-pointer'>Forgot password ?</h3>
 
 
+            {error && <p className=" mx-auto mb-4 font-normal text-red-500">
+                {error?.data?.message}                </p>}
 
-            <button type="submit" className=' w-full p-3 text-white bg-gradient-to-r from-emerald-600 to-emerald-400 hover:opacity-85 rounded-xl font-semibold'>Submit</button>
+            <button type="submit" disabled={isLoading} className=' flex items-center justify-center w-full p-3 text-white bg-gradient-to-r from-emerald-600 to-emerald-400 hover:opacity-85 rounded-xl font-semibold'>
+                {isLoading ? <LuLoader2 className=' animate-spin text-4xl' /> : 'Submit'}
+            </button>
 
 
             <div className='mt-5 bg-gray-800/80 rounded-b-lg w-full p-5 absolute bottom-0 flex items-center justify-center'>
-                don't have an account ? <h3 onClick={()=>navigate('/signup')} className=' self-start   hover:underline text-green-500 cursor-pointer ml-2'>  Sign Up</h3>
+                don't have an account ? <h3 onClick={() => navigate('/signup')} className=' self-start   hover:underline text-green-500 cursor-pointer ml-2'>  Sign Up</h3>
             </div>
 
         </form>
