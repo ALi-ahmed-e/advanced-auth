@@ -10,6 +10,7 @@ import { useCheckAuthQuery } from './store/auth'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setAuthData } from './store/AuthReducer'
+import ChangePassword from './pages/ChangePassword'
 function App() {
 
   const dispatch = useDispatch()
@@ -74,6 +75,8 @@ function App() {
               <Route path='/verfiy-email' element={<CheckNotAuth><VerfiyEmail /></CheckNotAuth>} />
 
               <Route path='/forgot-password' element={<ForgotPassword />} />
+              
+              <Route path='/reset-password/:token' element={<ChangePassword />} />
 
 
 

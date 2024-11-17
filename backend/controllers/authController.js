@@ -187,8 +187,9 @@ const resetPassword = async (req, res, next) => {
     try {
 
 
-        const { token } = req.params;
+        const {token}  = req.params;
         const { password } = req.body;
+    
 
         const user = await User.findOne({ resetPasswordToken: token, verificationTokenExpiresAt: { $gt: Date.now() } });
 
@@ -198,9 +199,7 @@ const resetPassword = async (req, res, next) => {
 
         user.verificationTokenExpiresAt = undefined
 
-        const saltRounds = 10;
-
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         user.password = hashedPassword
 
