@@ -1,4 +1,4 @@
-const { sendVerificationEmail, sendResetPasswordEmail, sendResetPasswordsuccessEmail } = require('../mailtrap/emails.js');
+const { sendVerificationEmail, sendResetPasswordEmail, sendResetPasswordsuccessEmail } = require('../nodeMailer/emails.js');
 const User = require('../models/UserModel.js')
 const generateTokensAndSetcookie = require("../utils/generateTokensAndSetcookie")
 const { signUpBodyValidation, loginBodyValidation, verfiyBodyValidation } = require("../utils/validationSchema")
